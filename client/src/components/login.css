@@ -1,0 +1,68 @@
+.Logincontainer {
+    border: 3px solid #f1f1f1;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, 50%);
+    padding: 16px;
+    width: 400px;
+    border-radius: 30px;
+    background-color: white;
+
+}
+
+.login,
+.Input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+form {
+    /* width: 40%; */
+    margin: 2px 0;
+    /* align-content: center; */
+}
+
+.Header {
+    color: grey;
+    text-align: center;
+}
+
+.button {
+    background-color: #04AA6D;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 50%;
+    border-radius: 30px;
+    position: relative;
+    text-align: center;
+    left: 25%;
+}
+
+.button:hover {
+    opacity: 0.8;
+}
+
+.links {
+    text-align: center;
+    text-decoration: rgb(145, 135, 135);
+    float: right;
+    font-weight: bold;
+
+}
+
+.eye {
+    cursor: pointer;
+    position: inherit;
+    right: 0.8cm;
+    bottom: 128px;
+}
