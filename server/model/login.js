@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
     power: {
         type: String,
         default: 'basic'
-    }
+    },
 },
     { collection: 'users' }
 )
