@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 
-function Header({ power }) {
+function Header({ power, createUser }) {
     return (
         <div>
             {/* Navbar */}
@@ -14,14 +14,10 @@ function Header({ power }) {
                     <li className="nav-item d-none d-sm-inline-block">
                         <Link to="/" className="nav-link">Home</Link>
                     </li>
-                    {power === "super-admin" ?
+                    {createUser &&
                         <li className="nav-item d-none d-sm-inline-block">
                             <Link to="/users/create" className="nav-link">Create User</Link>
-                        </li> : null}
-                    {power === "admin" ?
-                        <li className="nav-item d-none d-sm-inline-block">
-                            <Link to="/users/create" className="nav-link">Create User</Link>
-                        </li> : null}
+                        </li>}
                 </ul>
                 {/* Right navbar links */}
                 <ul className="navbar-nav ml-auto">

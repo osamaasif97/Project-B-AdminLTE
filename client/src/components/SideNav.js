@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import logo from '../AdminLTELogo.png'
-function SideNav({ power }) {
+function SideNav({ power, dashboardView, viewUser, dragUser, viewAdmin, editAdmin }) {
     const location = useLocation();
     return (
         <div>
@@ -48,24 +48,15 @@ function SideNav({ power }) {
                                     </li>
                                 </ul>
                             </li> */}
-                            <li className="nav-item" >
+                            {dashboardView && <li className="nav-item" >
                                 <Link to="/home"
                                     className={`nav-link ${location.pathname === "/home" ? "active" : null}`}
                                 >
                                     <i className="nav-icon fas fa-tachometer-alt" />
                                     <p>Dashboard</p>
                                 </Link>
-                            </li>
-                            {power === "super-admin" &&
-                                <li className="nav-item">
-                                    <Link to="/users" className={`nav-link ${location.pathname === "/users" ? "active" : null}`}>
-                                        <i className="nav-icon fas fa-users" />
-                                        <p>
-                                            Users
-                                        </p>
-                                    </Link>
-                                </li>}
-                            {power === "basic" &&
+                            </li>}
+                            {power === "Super Admin" &&
                                 <li className="nav-item">
                                     <Link to="/users" className={`nav-link ${location.pathname === "/users" ? "active" : null}`}>
                                         <i className="nav-icon fas fa-users" />
@@ -75,7 +66,17 @@ function SideNav({ power }) {
                                     </Link>
                                 </li>}
 
-                            {power === "super-admin" && <li className="nav-item">
+                            {viewUser && power !== "Super Admin" &&
+                                < li className="nav-item">
+                                    <Link to="/users" className={`nav-link ${location.pathname === "/users" ? "active" : null}`}>
+                                        <i className="nav-icon fas fa-users" />
+                                        <p>
+                                            Users
+                                        </p>
+                                    </Link>
+                                </li>}
+
+                            {power === "Super Admin" && <li className="nav-item">
                                 <Link to="/adminUsers" className={`nav-link ${location.pathname === "/adminUsers" ? "active" : null}`}>
                                     <i className="nav-icon bx bxs-wrench" />
                                     <p>
@@ -83,16 +84,17 @@ function SideNav({ power }) {
                                     </p>
                                 </Link>
                             </li>}
-                            {power === "admin" && <li className="nav-item">
-                                <Link to="/adminUsers" className={`nav-link ${location.pathname === "/adminUsers" ? "active" : null}`}>
-                                    <i className="nav-icon fas fa-users" />
-                                    <p>
-                                        Users
-                                    </p>
-                                </Link>
-                            </li>}
+                            {/* {dragUser && power !== "Super Admin" &&
+                                <li className="nav-item">
+                                    <Link to="/adminUsers" className={`nav-link ${location.pathname === "/adminUsers" ? "active" : null}`}>
+                                        <i className="nav-icon fas fa-users" />
+                                        <p>
+                                            Users
+                                        </p>
+                                    </Link>
+                                </li>} */}
 
-                            {power === "super-admin" && <li className="nav-item">
+                            {viewAdmin && <li className="nav-item">
                                 <Link to="/admin" className={`nav-link ${location.pathname === "/admin" ? "active" : null}`}>
                                     <i className="nav-icon bx bxs-extension" />
                                     <p>
@@ -100,11 +102,11 @@ function SideNav({ power }) {
                                     </p>
                                 </Link>
                             </li>}
-                            {power === "admin" && <li className="nav-item">
-                                <Link to="/admin" className={`nav-link ${location.pathname === "/admin" ? "active" : null}`}>
-                                    <i className="nav-icon bx bxs-extension" />
+                            {editAdmin && <li className="nav-item">
+                                <Link to="/permissions" className={`nav-link ${location.pathname === "/permissions" ? "active" : null}`}>
+                                    <i className="nav-icon fas fa-lock" />
                                     <p>
-                                        Admin
+                                        Permissions
                                     </p>
                                 </Link>
                             </li>}
@@ -113,9 +115,9 @@ function SideNav({ power }) {
                     {/* /.sidebar-menu */}
                 </div>
                 {/* /.sidebar */}
-            </aside>
+            </aside >
 
-        </div>
+        </div >
     )
 }
 

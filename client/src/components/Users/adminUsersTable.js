@@ -65,6 +65,9 @@ const AdminUsersTable = ({ Dataa, Users }) => {
     const token = sessionStorage.getItem('token')
     const [power, setPower] = useState()
     const [data, setData] = useState(Dataa)
+    const [edit, setEdit] = useState(false)
+    const [Delete, setDelete] = useState(false)
+    const [Activate, setactivate] = useState(false)
     const [query, setQuery] = useState("")
     const [showModal, setShowModal] = useState("close")
     const [selectedRows, setSelectedRows] = useState([]);
@@ -80,7 +83,10 @@ const AdminUsersTable = ({ Dataa, Users }) => {
                 token
             })
         }).then(data => data.json())
-        setPower(result.data.power);
+        setPower(result.data.power)
+        setEdit(result.data.edit)
+        setDelete(result.data.delete)
+        setactivate(result.data.activate)
     }
 
     useEffect(() => {
@@ -100,6 +106,7 @@ const AdminUsersTable = ({ Dataa, Users }) => {
             InactiveStatus(selectedFlatRows[i].original, setCheck)
         }
     }
+
     useEffect(() => {
         if (check) {
             Users().then(() => setCheck(false))
@@ -152,18 +159,16 @@ const AdminUsersTable = ({ Dataa, Users }) => {
         const id = props.row.original.id
         return (
             <div style={{ textAlign: 'center' }}>
-                <Link
-                    to={"/users/edit?id=" + `${id}`}
-                    className="modals" style={{
-                        color: "limegreen",
-                        paddingLeft: "5px",
-                        paddingRight: "10px",
-                        fontSize: '17px'
-                    }}
+                {edit && <Link to={"/users/edit?id=" + `${id}`} className="modals" style={{
+                    color: "limegreen",
+                    paddingLeft: "5px",
+                    paddingRight: "10px",
+                    fontSize: '17px'
+                }}
                 >
                     <i className="bx bx-edit" />
-                </Link>
-                <span onClick={() => {
+                </Link>}
+                {Delete && <span onClick={() => {
                     userData.current = props.row.original
                     setShowModal("delete")
                 }
@@ -176,7 +181,7 @@ const AdminUsersTable = ({ Dataa, Users }) => {
                 }}
                 >
                     <i className="nav-icon fas fa-trash" />
-                </span>
+                </span>}
             </div>
         )
     }
@@ -281,11 +286,11 @@ const AdminUsersTable = ({ Dataa, Users }) => {
         const newData = [...data];
         const [movedRow] = newData.splice(startIndex, 1);
         newData.splice(endIndex, 0, movedRow);
-        setData(newData);
         const row1 = data[startIndex].id
         const row2 = data[endIndex].id
         if (startIndex !== endIndex) {
             positionChanger(startIndex, endIndex, row1, row2)
+            setData(newData);
         }
     };
 
@@ -316,17 +321,20 @@ const AdminUsersTable = ({ Dataa, Users }) => {
     return (
         <div>
             <section className="content-wrapper" style={{ padding: '10px' }}>
-                {power === "super-admin" || power === "admin" ?
-                    <span><button className="deleteContact"
+                {Delete &&
+                    <button className="deleteContact"
                         onClick={() => setShowModal("Bulk-delete")}
                     >Delete</button>
-                        <button className="activate"
-                            onClick={activate}
-                        >Activate</button>
-                        <button className="activate" style={{ backgroundColor: "#ccc" }}
-                            onClick={Deactivate}
-                        >
-                            Deactivate</button></span> : null}
+                }
+                {Activate && <span>
+                    <button className="activate"
+                        onClick={activate}
+                    >Activate</button>
+                    <button className="activate" style={{ backgroundColor: "#ccc" }}
+                        onClick={Deactivate}
+                    >
+                        Deactivate</button>
+                </span>}
                 <input value={query} placeholder="Filter"
                     onChange={(e) => {
                         setQuery(e.target.value)

@@ -10,9 +10,11 @@ import activeStatus from '../functions/statusChanger/activeStatus'
 import InactiveStatus from '../functions/statusChanger/inactiveStatus'
 
 const Users = () => {
-
     const token = sessionStorage.getItem('token')
     const [power, setPower] = useState()
+    const [editUser, setEditUser] = useState(false)
+    const [DeleteUser, setDeleteUser] = useState(false)
+
     async function getUser() {
         const result = await fetch(`http://localhost:4000/info`, {
             method: 'POST',
@@ -25,11 +27,32 @@ const Users = () => {
         }).then(data => data.json())
         setPower(result.data.power);
     }
+    async function getPermission() {
+        if (power) {
+            const result = await fetch("http://localhost:4000/admins/getPermissions", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    power
+                })
+            }).then((req) => req.json())
+            if (result.status === 'ok') {
+                const dataaa = result.data[0]
+                setEditUser(dataaa.editUser)
+                setDeleteUser(dataaa.DeleteUser)
+            }
+        }
+    }
 
     useEffect(() => {
         getUser()
     }, [])
 
+    useEffect(() => {
+        getPermission()
+    }, [power])
 
     const [data, setData] = useState()
     const [query, setQuery] = useState("")
@@ -106,9 +129,9 @@ const Users = () => {
             name: "Action",
             selector: row => row.action,
             button: true,
-            omit: power === "super-admin" ? false : true,
+            omit: editUser || DeleteUser ? false : true,
             cell: (row) => <div>
-                <Link to={"/users/edit?id=" + `${row.id}`} className="modals" style={{
+                {editUser && <Link to={"/users/edit?id=" + `${row.id}`} className="modals" style={{
                     color: "limegreen",
                     paddingLeft: "5px",
                     paddingRight: "10px",
@@ -116,8 +139,8 @@ const Users = () => {
                 }}
                 >
                     <i className="bx bx-edit" />
-                </Link>
-                <span onClick={() => {
+                </Link>}
+                {DeleteUser && <span onClick={() => {
                     userData.current = row
                     setShowModal("delete")
                 }
@@ -130,31 +153,33 @@ const Users = () => {
                 }}
                 >
                     <i className="nav-icon fas fa-trash" />
-                </span>
+                </span>}
             </div>
 
         },
 
     ]
     const Data = data
-    // console.log(data); 
 
     return (
         <div>
-            {/* <SideNav /> */}
             <section className="content-wrapper" style={{ padding: '10px' }}>
-                {power === "super-admin" && <span>
-                    <button className="deleteContact"
-                        onClick={() => setShowModal("Bulk-delete")}
-                    >Delete</button>
-                    <button className="activate"
-                        onClick={activate}
-                    >Activate</button>
-                    <button className="activate" style={{ backgroundColor: "#ccc" }}
-                        onClick={Deactivate}
-                    >
-                        Deactivate</button>
-                </span>}
+                <span>
+                    {DeleteUser &&
+                        <button className="deleteContact"
+                            onClick={() => setShowModal("Bulk-delete")}
+                        >Delete</button>
+                    }
+                    {editUser && <span>
+                        <button className="activate"
+                            onClick={activate}
+                        >Activate</button>
+                        <button className="activate" style={{ backgroundColor: "#ccc" }}
+                            onClick={Deactivate}
+                        >
+                            Deactivate</button>
+                    </span>}
+                </span>
                 <input value={query} placeholder="Filter"
                     onChange={(e) => {
                         setQuery(e.target.value)
@@ -169,7 +194,7 @@ const Users = () => {
                             dat.email.toLowerCase().includes(query) ||
                             dat.address.toLowerCase().includes(query)
                         )}
-                        selectableRows={power === "super-admin" ? true : false}
+                        selectableRows={editUser || DeleteUser ? true : false}
                         selectableRowsVisibleOnly
                         onSelectedRowsChange={handleCheck}
                         highlightOnHover

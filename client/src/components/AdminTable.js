@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useTable, usePagination, useGlobalFilter, useAsyncDebounce } from 'react-table'
 import styled from 'styled-components'
 import Dropdown from 'react-dropdown';
@@ -21,7 +21,7 @@ const Styles = styled.div`
     max-width: 100%;
     color: rgba(0,0,0,0.87);
     background-color: #FFFFFF;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 400;
 
     tr {
@@ -55,11 +55,57 @@ const Styles = styled.div`
   }
 `
 
-const AdminTable = ({ Dataa, token }) => {
 
-    const options = [
-        'super-admin', 'admin', 'basic'
-    ];
+
+const AdminTable = ({ Dataa, token, power }) => {
+    const [modal, setModal] = useState("close")
+    const [permissionData, setPermissionData] = useState()
+    const [editAdmin, setEditAdmin] = useState(false)
+    const options = []
+
+
+    async function getPermissions() {
+        const result = await fetch("http://localhost:4000/admins/get-permissions", {
+            method: 'POST',
+        }).then((req) => req.json())
+        if (result.status === 'ok') {
+            for (let i = 0; i < result.data.length; i++) {
+                options.push(result.data[i].permissionName)
+                // setOptions([...options, result.data[i].permissionName])
+            }
+        }
+    }
+
+    async function getPermission() {
+        if (power) {
+            const result = await fetch("http://localhost:4000/admins/getPermissions", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    power
+                })
+            }).then((req) => req.json())
+            if (result.status === 'ok') {
+                const dataaa = result.data[0]
+                setEditAdmin(dataaa.editAdmin)
+            }
+        }
+    }
+
+    useEffect(() => {
+        getPermissions()
+    }, [])
+    useEffect(() => {
+        getPermission()
+    }, [power])
+
+    useEffect(() => {
+        if (power === "Super Admin") {
+            options.pop("Super Admin")
+        }
+    }, [options])
 
     const ChangePower = async (e, id) => {
         await fetch('http://localhost:4000/admins/change-power', {
@@ -76,15 +122,19 @@ const AdminTable = ({ Dataa, token }) => {
     }
 
     const SelectCell = props => {
+        const { editAdmin } = props
         return <div style={{
             maxWidth: '110px'
-        }}>{props.row.original._id !== "63c68f9317ffad6fc627a727" ?
+        }}>{props.row.original._id !== "63ca4455ffc95b26cf96ba33" ?
             <Dropdown
                 options={options}
                 // onChange={this._onSelect}
                 value={props.row.original.power}
                 placeholder="Select"
-                onChange={(e) => ChangePower(e, props.row.original._id)}
+                onChange={(e) => {
+                    ChangePower(e, props.row.original._id)
+                    setPermissionData(props.row.original)
+                }}
             /> : <div>{props.row.original.power}</div>}
         </div>
     }
@@ -92,7 +142,7 @@ const AdminTable = ({ Dataa, token }) => {
     const columns = useMemo(() => {
         const selectCell = props => {
             return (
-                <SelectCell {...props} />
+                <SelectCell {...props} editAdmin={editAdmin ? true : false} />
             )
         }
         return [
@@ -164,6 +214,8 @@ const AdminTable = ({ Dataa, token }) => {
                     }}
                     placeholder="Filter "
                 />
+                <i className="nav-icon fas fa-times" style={{ position: 'relative', right: '30px', cursor: 'pointer' }}
+                    onClick={() => setGlobalFilter('')} />
             </div>
         );
     }
